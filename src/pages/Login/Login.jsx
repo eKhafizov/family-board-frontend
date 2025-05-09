@@ -42,6 +42,7 @@ export default function Login() {
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handle}>
         <h1 className={styles.title}>Вход</h1>
+        <h2>TEST</h2>
 
         <input
           className={styles.input}
