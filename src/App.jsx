@@ -9,9 +9,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route index element={<Login />} />
         <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
-
+g
         <Route
           path="/parent"
           element={token ? <ParentDashboard /> : <Navigate to="/login" />}

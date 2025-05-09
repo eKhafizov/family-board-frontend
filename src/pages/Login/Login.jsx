@@ -40,7 +40,8 @@ export default function Login() {
 
   return (
     <div className={styles.container}>
-      <form className={styles.form} onSubmit={handle}>
+      <h1>TEST</h1>
+      {/* <form className={styles.form} onSubmit={handle}>
         <h1 className={styles.title}>Вход</h1>
         <h2>TEST</h2>
 
@@ -67,7 +68,7 @@ export default function Login() {
         </button>
 
         {loginError && <p className={styles.error}>Ошибка: {loginError.data?.detail || loginError.error}</p>}
-      </form>
+      </form> */}
     </div>
   );
 }
