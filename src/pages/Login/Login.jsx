@@ -4,20 +4,37 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 
 export default function Login() {
-  const [login] = useLoginMutation();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
+  const navigate                = useNavigate();
 
+  // 1) RTK Query хук для логина
+  const [login, { isLoading: isLogging, error: loginError }] = useLoginMutation();
+
+  // 2) RTK Query хук для /users/me — но сразу не делать запрос
+  const {
+    data: me,
+    refetch: fetchMe,    // эта функция запустит запрос
+    isFetching: isFetchingMe,
+  } = useGetMeQuery(undefined, { skip: true });
+
+  // 3) Обработчик формы
   const handle = async (e) => {
     e.preventDefault();
     try {
-      const result = await login({ email, password }).unwrap();
-      localStorage.setItem('token', result.access_token);
-      const me = await useGetMeQuery().refetch();
-      navigate(me.data.role === 'parent' ? '/parent' : '/child');
-    } catch {
-      alert('Ошибка входа');
+      // 3.1) Логинимся
+      const { access_token } = await login({ email, password }).unwrap();
+      localStorage.setItem('token', access_token);
+
+      // 3.2) Теперь можем получить /users/me
+      const meResult = await fetchMe().unwrap(); // вернёт объект { id, email, role, ... }
+
+      // 3.3) И только после этого навигируем
+      navigate(meResult.role === 'parent' ? '/parent' : '/child');
+
+    } catch (err) {
+      // здесь можно распарсить err.data.detail или просто alert
+      alert('Не удалось войти: ' + (err.data?.detail || err.message));
     }
   };
 
@@ -25,6 +42,7 @@ export default function Login() {
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handle}>
         <h1 className={styles.title}>Вход</h1>
+
         <input
           className={styles.input}
           type="email"
@@ -33,6 +51,7 @@ export default function Login() {
           placeholder="Email"
           required
         />
+
         <input
           className={styles.input}
           type="password"
@@ -41,9 +60,12 @@ export default function Login() {
           placeholder="Пароль"
           required
         />
-        <button className={styles.button} type="submit">
-          Войти
+
+        <button className={styles.button} type="submit" disabled={isLogging || isFetchingMe}>
+          {isLogging || isFetchingMe ? 'Загрузка…' : 'Войти'}
         </button>
+
+        {loginError && <p className={styles.error}>Ошибка: {loginError.data?.detail || loginError.error}</p>}
       </form>
     </div>
   );
