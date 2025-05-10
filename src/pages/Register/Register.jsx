@@ -1,3 +1,5 @@
+// src/pages/Register/Register.jsx
+
 import React, { useState } from 'react';
 import { useRegisterMutation } from '../../store/api';
 import { useNavigate } from 'react-router-dom';
@@ -7,26 +9,22 @@ import styles from './Register.module.css';
 export default function Register() {
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
+
   const [form, setForm] = useState({
     email: '',
     password: '',
     role: 'parent',
-    family_id: ''  // остаётся пустой строкой, когда роль parent — не отправляется
+    family_id: ''
   });
 
-  // Универсальный обработчик изменений
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Особенная логика для роли — сброс family_id, если родитель
   const handleRoleChange = (e) => {
     const role = e.target.value;
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       role,
       family_id: role === 'child' ? prev.family_id : ''
@@ -36,7 +34,6 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Формируем payload для бэка: family_id либо число, либо null
       const payload = {
         email: form.email,
         password: form.password,
@@ -44,10 +41,10 @@ export default function Register() {
         family_id: form.role === 'child' ? Number(form.family_id) : null
       };
       await register(payload).unwrap();
-      alert('Успешная регистрация! Теперь войдите в систему.');
+      alert('Успешная регистрация! Теперь войдите.');
       navigate('/login');
     } catch (err) {
-      console.error('Registration error', err);
+      console.error(err);
       alert('Ошибка регистрации: ' + (err.data?.detail || err.error || err.message));
     }
   };
@@ -85,3 +82,33 @@ export default function Register() {
           Роль
           <select
             className={styles.select}
+            name="role"
+            value={form.role}
+            onChange={handleRoleChange}
+          >
+            <option value="parent">Родитель</option>
+            <option value="child">Ребёнок</option>
+          </select>
+        </label>
+
+        {form.role === 'child' && (
+          <label className={styles.label}>
+            ID семьи
+            <input
+              className={styles.input}
+              type="number"
+              name="family_id"
+              value={form.family_id}
+              onChange={handleChange}
+              required
+            />
+          </label>
+        )}
+
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Регистрация…' : 'Зарегистрироваться'}
+        </Button>
+      </form>
+    </div>
+  );
+}
