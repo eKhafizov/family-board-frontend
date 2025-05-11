@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_API_URL}/api`, // или без /api, в зависимости от вашего роутинга
+    baseUrl: `${process.env.REACT_APP_API_URL}`, // или без /api, в зависимости от вашего роутинга
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) headers.set('Authorization', `Bearer ${token}`);
@@ -25,6 +25,14 @@ export const api = createApi({
         body: user,
       }),
     }),
+    topUp: builder.mutation({
+      query: ({ familyId, amount }) => ({
+        url: `/families/${familyId}/top-up`,
+        method: 'POST',
+        body: { amount },
+      }),
+      invalidatesTags: ['Family'],  // чтобы после топ-апа подтянулся обновлённый баланс
+    }),
     getMe: builder.query({ query: () => '/users/me' }),
     getTasks: builder.query({ query: () => '/tasks' }),
     createTask: builder.mutation({
@@ -40,6 +48,7 @@ export const api = createApi({
 });
 
 export const {
+  useTopUpMutation,
   useLoginMutation,
   useRegisterMutation,
   useGetMeQuery,

@@ -3,6 +3,7 @@ import Login           from './pages/Login/Login';
 import Register        from './pages/Register/Register';
 import ParentDashboard from './pages/ParentDashboard/ParentDashboard';
 import ChildDashboard  from './pages/ChildDashboard/ChildDashboard';
+import TopUp from './pages/TopUp/TopUp';
 
 export default function App() {
   const token = localStorage.getItem('token');
@@ -13,6 +14,7 @@ export default function App() {
         {/* публичные */}
         <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/top-up" element={<TopUp />} />
 
         {/* приватные */}
         <Route
