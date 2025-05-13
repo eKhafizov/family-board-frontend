@@ -36,9 +36,36 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handle} className={styles.form}>
-      {/* … */}
-    </form>
+      <div className={styles.container}>
+        <form className={styles.form} onSubmit={handle}>
+          <h1 className={styles.title}>Вход</h1>
+          <h2>TEST</h2>
+
+          <input
+            className={styles.input}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
+
+          <input
+            className={styles.input}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Пароль"
+            required
+          />
+
+          <button className={styles.button} type="submit" disabled={isLogging || isFetchingMe}>
+            {isLogging || isFetchingMe ? 'Загрузка…' : 'Войти'}
+          </button>
+
+          {loginError && <p className={styles.error}>Ошибка: {loginError.data?.detail || loginError.error}</p>}
+        </form>
+      </div>
   );
 }
 
