@@ -1,9 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+const API_ROOT = process.env.REACT_APP_API_URL || '';
+const USERS_ROOT = `${API_ROOT}/users/users`;  // двойной users
+
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-      baseUrl: process.env.REACT_APP_API_URL || '/',
+      baseUrl: USERS_ROOT,
       prepareHeaders: (headers) => {
         const token = localStorage.getItem('token');
         if (token) headers.set('Authorization', `Bearer ${token}`);
@@ -13,14 +16,14 @@ export const api = createApi({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: ({ email, password }) => ({
-        url: '/users/token',
+        url: '/token',
         method: 'POST',
         body: { username: email, password },
       }),
     }),
     register: builder.mutation({
       query: (user) => ({
-        url: '/users/register',
+        url: '/register',
         method: 'POST',
         body: user,
       }),
