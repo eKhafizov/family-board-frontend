@@ -28,6 +28,8 @@ export default function Login() {
 
       // 3.2) Теперь можем получить /users/me
       const meResult = await fetchMe().unwrap(); // вернёт объект { id, email, role, ... }
+      localStorage.setItem('familyId', String(meResult.family_id));
+      localStorage.setItem('role', meResult.role);
 
       // 3.3) И только после этого навигируем
       navigate(meResult.role === 'parent' ? '/parent' : '/child');

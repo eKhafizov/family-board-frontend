@@ -1,28 +1,25 @@
-import { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import AdSense from 'react-adsense';
 import styles from './AdBanner.module.css';
 
 export default function AdBanner({ role }) {
-  // выбираем нужные из env
-  const client = process.env[
+  const clientKey =
     role === 'parent'
       ? 'REACT_APP_AD_CLIENT_PARENT'
-      : 'REACT_APP_AD_CLIENT_CHILD'
-  ];
-  const slot = process.env[
+      : 'REACT_APP_AD_CLIENT_CHILD';
+  const slotKey =
     role === 'parent'
       ? 'REACT_APP_AD_SLOT_PARENT'
-      : 'REACT_APP_AD_SLOT_CHILD'
-  ];
+      : 'REACT_APP_AD_SLOT_CHILD';
 
-  // Убедимся, что <ins> перерисовывается
-  useEffect(() => {
-    if (window.adsbygoogle) window.adsbygoogle.push({});
-  }, [role]);
+  const client = process.env[clientKey];
+  const slot = process.env[slotKey];
+
+  if (!client || !slot) return null;
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.banner}>
       <AdSense.Google
         client={client}
         slot={slot}
