@@ -18,9 +18,21 @@ export const api = createApi({
       query: ({ email, password }) => ({
         url: '/token',
         method: 'POST',
-        body: { username: email, password },
+        body: { username: email, password : password },
       }),
     }),
+    fetchLogin: builder.mutation({
+    			query: ({username, password} ) => ({
+      				url: '/token',
+       				method: 'POST',
+       				body: {username, password}
+    			}),
+     			async onQueryStarted({username, password}, {dispatch, queryFulfilled}) {
+       				const {data: {token}} = await queryFulfilled;
+              localStorage.setItem('token', token);
+     			},
+     			invalidatesTags: ['FAVORITES'],
+   		}),
     register: builder.mutation({
       query: ( {email, password, full_name }) => ({
         url: '/register',
@@ -53,6 +65,7 @@ export const api = createApi({
 export const {
   useTopUpMutation,
   useLoginMutation,
+  useFetchLoginMutation,
   useRegisterMutation,
   useGetMeQuery,
   useGetTasksQuery,

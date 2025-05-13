@@ -1,38 +1,64 @@
 import { useState } from 'react';
-import { useLoginMutation, useGetMeQuery } from '../../store/api';
-import { useNavigate } from 'react-router-dom';
+import { useFetchLoginMutation } from '../../store/api';
+// import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const navigate                = useNavigate();
+  // const navigate                = useNavigate();
 
-  const [login, { isLoading: isLogging, error: loginError }] = useLoginMutation();
+  const [login] = useFetchLoginMutation();
   // просто получаем refetch, без unwrap()
-  const { refetch: fetchMe, isFetching: isFetchingMe } = 
-    useGetMeQuery(undefined, { skip: true });
+  // const { refetch: fetchMe, isFetching: isFetchingMe } = 
+  //   useGetMeQuery(undefined, { skip: true });
+
+
+//     {
+    //   "email": "user@example.com",
+    //   "id": 3,
+    //   "role": "parent",
+    //   "family_id": null,
+    //   "created_at": "2025-05-13T19:56:36.299307"
+    // } 
+//     {
+//     "detail": [
+//         {
+//             "type": "missing",
+//             "loc": [
+//                 "body",
+//                 "username"
+//             ],
+//             "msg": "Field required",
+//             "input": {
+//                 "password": "aw"
+//             }
+//         }
+//     ]
+// }
 
   const handle = async (e) => {
     e.preventDefault();
-    try {
-      // логинимся
-      const { access_token } = await login({ username: email, password }).unwrap();
-      localStorage.setItem('token', access_token);
+    console.log(`${email} ${password})}`)
+    login({ username: email, password: password})
+    // try {
+    //   // логинимся
+    //   const { access_token } = await login({ username: email, password }).unwrap();
+    //   localStorage.setItem('token', access_token);
 
-      // делаем простой refetch() — он возвращает промис, который резолвится в { data, error }
-      const result = await fetchMe();
-      if (result.error || !result.data) {
-        throw new Error('Не удалось получить профиль');
-      }
-      const me = result.data;
+    //   // делаем простой refetch() — он возвращает промис, который резолвится в { data, error }
+    //   const result = await fetchMe();
+    //   if (result.error || !result.data) {
+    //     throw new Error('Не удалось получить профиль');
+    //   }
+    //   const me = result.data;
       
-      localStorage.setItem('familyId', String(me.family_id));
-      localStorage.setItem('role', me.role);
-      navigate(me.role === 'parent' ? '/parent' : '/child');
-    } catch (err) {
-      alert('Не удалось войти: ' + (err.data?.detail || err.message));
-    }
+    //   localStorage.setItem('familyId', String(me.family_id));
+    //   localStorage.setItem('role', me.role);
+    //   navigate(me.role === 'parent' ? '/parent' : '/child');
+    // } catch (err) {
+    //   alert('Не удалось войти: ' + (err.data?.detail || err.message));
+    // }
   };
 
   return (
@@ -59,11 +85,15 @@ export default function Login() {
             required
           />
 
-          <button className={styles.button} type="submit" disabled={isLogging || isFetchingMe}>
-            {isLogging || isFetchingMe ? 'Загрузка…' : 'Войти'}
+          <button
+            className={styles.button}
+            type="submit"
+            // disabled={isLogging || isFetchingMe}
+          >
+            {/* {isLogging || isFetchingMe ? 'Загрузка…' : 'Войти'} */}
           </button>
 
-          {loginError && <p className={styles.error}>Ошибка: {loginError.data?.detail || loginError.error}</p>}
+          {/* {loginError && <p className={styles.error}>Ошибка: {loginError.data?.detail || loginError.error}</p>} */}
         </form>
       </div>
   );
