@@ -22,10 +22,10 @@ export const api = createApi({
       }),
     }),
     register: builder.mutation({
-      query: (user) => ({
+      query: ( {email, password, full_name }) => ({
         url: '/register',
         method: 'POST',
-        body: user,
+        body: { email, password, full_name },
       }),
     }),
     topUp: builder.mutation({

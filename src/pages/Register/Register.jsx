@@ -37,8 +37,7 @@ export default function Register() {
       const payload = {
         email: form.email,
         password: form.password,
-        role: form.role,
-        family_id: form.role === 'child' ? Number(form.family_id) : null
+        full_name: form.fullName,
       };
       await register(payload).unwrap();
       alert('Успешная регистрация! Теперь войдите.');
