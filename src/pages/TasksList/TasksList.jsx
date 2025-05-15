@@ -1,6 +1,6 @@
 // src/pages/TasksList/TasksList.jsx
 import React from 'react'
-import { useFetchTasksQuery } from '../../store/apiSlice'
+import { useFetchTasksQuery } from '../../store/api/'
 
 export default function TasksList() {
   const { data: tasks, error, isLoading } = useFetchTasksQuery()
