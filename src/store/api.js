@@ -13,6 +13,7 @@ export const api = createApi({
         return headers;
       },
     }),
+  tagTypes: ['User'],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: ({ email, password }) => ({
@@ -28,11 +29,19 @@ export const api = createApi({
        				body: {username, password}
     			}),
      			async onQueryStarted({username, password}, {dispatch, queryFulfilled}) {
-       				const {data: {token}} = await queryFulfilled;
-              localStorage.setItem('token', token);
-     			},
-     			invalidatesTags: ['FAVORITES'],
+       				const { data: { access_token } } = await queryFulfilled
+              localStorage.setItem('token', access_token)
+              // и сразу дергаем getMe
+              dispatch(api.endpoints.fetchMe.initiate())
+          },
+          invalidatesTags: ['User'],
    		}),
+     fetchMe: builder.query({
+      query: () => ({
+        url: 'https://family-board.onrender.com/users/users/me',
+      }),
+      providesTags: ['User'],
+    }),
     register: builder.mutation({
       query: ( {email, password, full_name }) => ({
         url: '/register',
@@ -63,9 +72,10 @@ export const api = createApi({
 });
 
 export const {
+  useFetchLoginMutation,
+  useFetchMeQuery,
   useTopUpMutation,
   useLoginMutation,
-  useFetchLoginMutation,
   useRegisterMutation,
   useGetMeQuery,
   useGetTasksQuery,

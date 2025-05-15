@@ -1,64 +1,23 @@
 import { useState } from 'react';
 import { useFetchLoginMutation } from '../../store/api';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  // const navigate                = useNavigate();
+  const navigate                = useNavigate();
 
   const [login] = useFetchLoginMutation();
-  // просто получаем refetch, без unwrap()
-  // const { refetch: fetchMe, isFetching: isFetchingMe } = 
-  //   useGetMeQuery(undefined, { skip: true });
 
-
-//     {
-    //   "email": "user@example.com",
-    //   "id": 3,
-    //   "role": "parent",
-    //   "family_id": null,
-    //   "created_at": "2025-05-13T19:56:36.299307"
-    // } 
-//     {
-//     "detail": [
-//         {
-//             "type": "missing",
-//             "loc": [
-//                 "body",
-//                 "username"
-//             ],
-//             "msg": "Field required",
-//             "input": {
-//                 "password": "aw"
-//             }
-//         }
-//     ]
-// }
 
   const handle = async (e) => {
     e.preventDefault();
-    console.log(`${email} ${password})}`)
     login({ username: email, password: password})
-    // try {
-    //   // логинимся
-    //   const { access_token } = await login({ username: email, password }).unwrap();
-    //   localStorage.setItem('token', access_token);
-
-    //   // делаем простой refetch() — он возвращает промис, который резолвится в { data, error }
-    //   const result = await fetchMe();
-    //   if (result.error || !result.data) {
-    //     throw new Error('Не удалось получить профиль');
-    //   }
-    //   const me = result.data;
-      
-    //   localStorage.setItem('familyId', String(me.family_id));
-    //   localStorage.setItem('role', me.role);
-    //   navigate(me.role === 'parent' ? '/parent' : '/child');
-    // } catch (err) {
-    //   alert('Не удалось войти: ' + (err.data?.detail || err.message));
-    // }
+    await login({ username: email, password }).unwrap()
+    // после того, как данные пользователя попадут в кэш fetchMe,
+    // вы можете подписаться на useFetchMeQuery в любом месте (например, в App.jsx)
+    navigate('/parent')  // или маршрут по роли, как раньше
   };
 
   return (
