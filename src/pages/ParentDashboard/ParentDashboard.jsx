@@ -1,6 +1,6 @@
 import AdBanner from '../../components/AdBanner/AdBanner';
 import { Link } from 'react-router-dom';
-import TasksList from './../TasksList/TasksList';
+import TasksList from '../TasksList/TasksList';
 
 // ...
 export default function ParentDashboard() {
