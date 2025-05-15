@@ -14,6 +14,7 @@ export const api = createApi({
       if (token) headers.set('Authorization', `Bearer ${token}`)
       return headers
     }, // абсолютные URL в endpoints
+  }),
   tagTypes: ['User', 'Tasks'],
   endpoints: (builder) => ({
     // Регистрация пользователя
@@ -58,7 +59,6 @@ export const api = createApi({
     }),
 
   }),
-})
 })
 
 export const {
