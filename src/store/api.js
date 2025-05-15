@@ -1,8 +1,19 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+
+const API_ROOT =
+  process.env.REACT_APP_API_URL?.trim().replace(/\/$/, '') ||
+  'https://family-board.onrender.com'
+
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: '' }), // абсолютные URL в endpoints
+  baseQuery: fetchBaseQuery({
+    baseUrl: API_ROOT,                // ← вот сюда ставим домен бэка
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem('token')
+      if (token) headers.set('Authorization', `Bearer ${token}`)
+      return headers
+    }, // абсолютные URL в endpoints
   tagTypes: ['User', 'Tasks'],
   endpoints: (builder) => ({
     // Регистрация пользователя
@@ -45,8 +56,10 @@ export const api = createApi({
       query: () => '/tasks',
       providesTags: ['Tasks'],
     }),
+
   }),
-});
+})
+})
 
 export const {
   useRegisterMutation,
