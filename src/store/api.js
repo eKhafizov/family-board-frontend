@@ -57,6 +57,15 @@ export const api = createApi({
       query: () => '/tasks',
       providesTags: ['Tasks'],
     }),
+    updateTask: builder.mutation({
+      query: ({ id, ...patch }) => ({
+        url: `/tasks/${id}`,
+        method: 'PUT',      // или PATCH, если вы так настроите бэкенд
+        body: patch,
+      }),
+      // После обновления заново подгружаем список
+      invalidatesTags: ['Tasks'],
+    }),
 
   }),
 })
@@ -67,6 +76,7 @@ export const {
   useFetchMeQuery,
   useFetchTasksQuery,
   useCreateTaskMutation,
+  useUpdateTaskMutation, 
 } = api;
 
 
