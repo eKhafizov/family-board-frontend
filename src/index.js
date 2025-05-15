@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import App from './App';
 import './index.css'; 
 import { store } from './store/index'         // ← импорт store
-import { api }   from './store/apiSlice'// ← импорт apiSlice
+import { api }   from './store/api'// ← импорт apiSlice
 
 // Берём контейнер из index.html
 const container = document.getElementById('root');
