@@ -33,24 +33,17 @@ export const api = createApi({
       providesTags: ['User'],
     }),
     // Получить все задачи
-    fetchTasks: builder.query({
-      query: () => 'https://family-board.onrender.com/tasks',
-      providesTags: (result = [], error, arg) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: 'Tasks', id })),
-              { type: 'Tasks', id: 'LIST' },
-            ]
-          : [{ type: 'Tasks', id: 'LIST' }],
-    }),
-    // Создать новую задачу
     createTask: builder.mutation({
       query: (task) => ({
-        url: 'https://family-board.onrender.com/tasks',
+        url: '/tasks',
         method: 'POST',
         body: task,
       }),
-      invalidatesTags: [{ type: 'Tasks', id: 'LIST' }],
+      invalidatesTags: ['Tasks'],
+    }),
+    fetchTasks: builder.query({
+      query: () => '/tasks',
+      providesTags: ['Tasks'],
     }),
   }),
 });
