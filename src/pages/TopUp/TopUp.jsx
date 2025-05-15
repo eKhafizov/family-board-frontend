@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
-import { useTopUpMutation } from '../../store/api'
+//import { useTopUpMutation } from '../../store/api'
 import { useNavigate } from 'react-router-dom'
 import styles from './TopUp.module.css'
 import Button from '../../components/Button/Button'
 
 export default function TopUp() {
   const [amount, setAmount] = useState('')
-  const [topUp, { isLoading, error }] = useTopUpMutation()
+//  const [topUp, { isLoading, error }] = useTopUpMutation()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       // familyId можно взять из currentUser или передать пропсом
-      const familyId = localStorage.getItem('familyId')  
-      await topUp({ familyId, amount: Number(amount) }).unwrap()
+      //const familyId = localStorage.getItem('familyId')  
+      //await topUp({ familyId, amount: Number(amount) }).unwrap()
       alert('Баланс успешно пополнен!')
       navigate('/parents/dashboard')
     } catch (err) {
@@ -37,14 +37,18 @@ export default function TopUp() {
             required
           />
         </label>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Отправка…' : 'Пополнить'}
+        <Button
+          type="submit"
+          //disabled={isLoading}
+        >
+          'Пополнить'
+          {/* {isLoading ? 'Отправка…' : 'Пополнить'} */}
         </Button>
-        {error && (
+        {/* {error && (
           <p className={styles.error}>
             {error.data?.detail || error.error}
           </p>
-        )}
+        )} */}
       </form>
     </div>
   )
