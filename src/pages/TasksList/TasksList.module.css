@@ -1,0 +1,16 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.list {
+  list-style: none;
+  padding: 0;
+}
+.item {
+  border-bottom: 1px solid #ddd;
+  padding: 8px 0;
+}
+.error {
+  color: red;
+}

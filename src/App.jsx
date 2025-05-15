@@ -4,6 +4,7 @@ import Register from './pages/Register/Register';
 import ParentDashboard from './pages/ParentDashboard/ParentDashboard';
 import ChildDashboard from './pages/ChildDashboard/ChildDashboard';
 import TopUp from './pages/TopUp/TopUp';
+import TasksList from './pages/TasksList/TasksList';
 
 export default function App() {
   const token = localStorage.getItem('token');
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* Protected routes */}
+        <Route path="/tasks" element={<TasksList />} />
         <Route
           path="/parent"
           element={token ? <ParentDashboard /> : <Navigate to="/login" />}
