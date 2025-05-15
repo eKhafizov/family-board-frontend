@@ -12,13 +12,16 @@ export default function TasksList() {
   if (error)     return <p>Ошибка при загрузке: {error.toString()}</p>
 
   return (
-    <ul>
-    <CreateTask onCreated={refetch} />
-      {tasks.map(task => (
-        <li key={task.id}>
-          {task.title} — {task.is_completed ? '✅' : '❌'}
-        </li>
-      ))}
-    </ul>
+    <>
+      <CreateTask onCreated={refetch} />
+      <ul>
+        {tasks.map(task => (
+          <li key={task.id}>
+            {task.title} — {task.is_completed ? '✅' : '❌'}
+          </li>
+        ))}
+      </ul>
+    </>
+    
   )
 }
