@@ -78,7 +78,14 @@ export const api = createApi({
       }),
       invalidatesTags: ['Family'],
     }),
-    
+    topUpFamily: builder.mutation({
+      query: ({ family_id, amount }) => ({
+        url: `/families/${family_id}/topup`,
+        method: 'POST',
+        body: { amount },
+      }),
+      invalidatesTags: ['Family'],
+    }),
 
   }),
 })
@@ -91,7 +98,8 @@ export const {
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useCreateFamilyMutation,
-  useFetchFamiliesQuery
+  useFetchFamiliesQuery,
+  useTopUpFamilyMutation
 } = api;
 
 
