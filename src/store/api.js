@@ -15,7 +15,7 @@ export const api = createApi({
       return headers
     }, // абсолютные URL в endpoints
   }),
-  tagTypes: ['User', 'Tasks'],
+  tagTypes: ['User', 'Tasks', 'Family'],
   endpoints: (builder) => ({
     // Регистрация пользователя
     register: builder.mutation({
@@ -66,6 +66,19 @@ export const api = createApi({
       // После обновления заново подгружаем список
       invalidatesTags: ['Tasks'],
     }),
+    fetchFamilies: builder.query({
+     query: () => '/families',
+      providesTags: ['Family'],
+    }),  
+    createFamily: builder.mutation({
+      query: fam => ({
+        url: '/families',
+        method: 'POST',
+        body: fam,
+      }),
+      invalidatesTags: ['Family'],
+    }),
+    
 
   }),
 })
@@ -76,7 +89,7 @@ export const {
   useFetchMeQuery,
   useFetchTasksQuery,
   useCreateTaskMutation,
-  useUpdateTaskMutation, 
+  useUpdateTaskMutation,
 } = api;
 
 
