@@ -5,6 +5,7 @@ import ParentDashboard from './pages/ParentDashboard/ParentDashboard';
 import ChildDashboard from './pages/ChildDashboard/ChildDashboard';
 import TopUp from './pages/TopUp/TopUp';
 import TasksList from './pages/TasksList/TasksList';
+import FamiliesList from './pages/FamiliesList/FamiliesList';
 
 export default function App() {
   const token = localStorage.getItem('token');
@@ -15,6 +16,8 @@ export default function App() {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/families" element={<FamiliesList />} />
+        
         {/* Protected routes */}
         <Route path="/tasks" element={<TasksList />} />
         <Route
