@@ -86,7 +86,13 @@ export const api = createApi({
       }),
       invalidatesTags: ['Family'],
     }),
-
+    confirmTask: builder.mutation({
+      query: ({ id }) => ({
+        url: `/tasks/${id}/confirm`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Tasks', 'Family'],
+    }),
   }),
 })
 
@@ -99,7 +105,8 @@ export const {
   useUpdateTaskMutation,
   useCreateFamilyMutation,
   useFetchFamiliesQuery,
-  useTopUpFamilyMutation
+  useTopUpFamilyMutation,
+  useConfirmTaskMutation,
 } = api;
 
 
