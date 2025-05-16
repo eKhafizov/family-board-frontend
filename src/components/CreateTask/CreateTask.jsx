@@ -6,6 +6,7 @@ export default function CreateTask({ onCreated }) {
   const [title, setTitle]             = useState('')
   const [description, setDescription] = useState('')
   const [createTask, { isLoading, error }] = useCreateTaskMutation()
+  const [price, setPrice]             = useState(0)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -13,6 +14,7 @@ export default function CreateTask({ onCreated }) {
       await createTask({
         title,
         description,
+        price,
         done_by_parent: false,
         family_id: null,
         assigned_to_child_id: null,
@@ -20,6 +22,7 @@ export default function CreateTask({ onCreated }) {
       // сброс формы
       setTitle('')
       setDescription('')
+      setPrice(0)
       // уведомляем родителя (или перелистываем и т.п.)
       onCreated?.()
     } catch (err) {
@@ -43,6 +46,13 @@ export default function CreateTask({ onCreated }) {
         value={description}
         onChange={e => setDescription(e.target.value)}
         placeholder="Описание (необязательно)"
+      />
+      <input
+        type="number"
+        value={price}
+        onChange={e => setPrice(Number(e.target.value))}
+        placeholder="Цена"
+        required
       />
       <button className={styles.button} type="submit" disabled={isLoading}>
         {isLoading ? 'Создаём…' : 'Создать'}
