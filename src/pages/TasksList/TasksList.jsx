@@ -1,11 +1,11 @@
 // src/pages/TasksList/TasksList.jsx
 import React from 'react'
-import {
+import { 
   useFetchTasksQuery,
   useUpdateTaskMutation,
   useFetchMeQuery,
   useConfirmTaskMutation
-} from '../../store/api'
+} from '../../store/api'    // ← проверьте, что именно этот файл экспортирует ваши хуки
 import CreateTask from '../../components/CreateTask/CreateTask'
 import styles from './TasksList.module.css'
 
@@ -18,27 +18,32 @@ export default function TasksList() {
     refetch
   } = useFetchTasksQuery()
 
-  // 2) Мутация для отметки выполнения ребёнком
+  // 2) Отметка выполнения ребёнком
   const [updateTask, { isLoading: isUpdating, error: updateError }] =
     useUpdateTaskMutation()
 
-  // 3) Мутация для подтверждения родителем
+  // 3) Подтверждение родителем и перевод средств
   const [confirmTask, { isLoading: isConfirming, error: confirmError }] =
     useConfirmTaskMutation()
 
-  // 4) Текущий пользователь
-  const { data: me } = useFetchMeQuery()
+  // 4) Текущий пользователь (чтобы понимать, ребёнок он или родитель)
+  const { data: me, isLoading: meLoading } = useFetchMeQuery()
 
-  // 5) Обработчики
+  // 5) Loading/Error состояния
+  if (isFetching || meLoading) return <p>Загрузка…</p>
+  if (fetchError) {
+    const msg = fetchError.data?.detail ?? fetchError.error ?? JSON.stringify(fetchError)
+    return <p className={styles.error}>Ошибка загрузки: {msg}</p>
+  }
+
+  // 6) Хэндлеры кнопок
   const handleToggle = async (task) => {
     try {
-      await updateTask({
-        id: task.id,
-        is_completed: !task.is_completed,
-      }).unwrap()
-      // RTK Query автоматически обновит fetchTasks
+      await updateTask({ id: task.id, is_completed: !task.is_completed }).unwrap()
+      // RTK Query автообновит fetchTasks, но можно явно:
+      refetch()
     } catch (err) {
-      console.error('Не удалось обновить задачу', err)
+      console.error('Не удалось отметить выполнение', err)
     }
   }
 
@@ -51,27 +56,17 @@ export default function TasksList() {
     }
   }
 
-  // 6) Загрузка / ошибки
-  if (isFetching) return <p>Загрузка задач…</p>
-  if (fetchError) {
-    const msg =
-      fetchError.data?.detail ??
-      fetchError.error ??
-      JSON.stringify(fetchError)
-    return <p className={styles.error}>Ошибка загрузки: {msg}</p>
-  }
-
   return (
     <div className={styles.container}>
       <h1>Список задач</h1>
 
-      {/* Форма создания новой задачи */}
+      {/* Форма создания */}  
       <CreateTask onCreated={refetch} />
 
       {/* Ошибки мутаций */}
       {updateError && (
         <p className={styles.error}>
-          Ошибка отметки выполнения: {updateError.data?.detail ?? updateError.error}
+          Ошибка отметки: {updateError.data?.detail ?? updateError.error}
         </p>
       )}
       {confirmError && (
@@ -80,7 +75,7 @@ export default function TasksList() {
         </p>
       )}
 
-      {/* Сам список */}
+      {/* Сами задачи */}
       <ul className={styles.list}>
         {tasks.map(task => (
           <li key={task.id} className={styles.item}>
@@ -92,27 +87,27 @@ export default function TasksList() {
               {task.done_by_parent
                 ? "✅ Подтверждена и переведена"
                 : task.done_by_child
-                ? "⏳ Ждёт подтверждения"
-                : "❌ Не выполнена ребёнком"}
+                  ? "⏳ Ждёт подтверждения"
+                  : "❌ Не выполнена ребёнком"}
             </p>
 
-            {/* Кнопка отметки выполнения (для ребёнка) */}
-            {!task.done_by_child && me?.role === "child" && (
+            {/* Кнопка для ребёнка */}
+            {me?.role === "child" && !task.done_by_child && (
               <button
+                className={styles.button}
                 onClick={() => handleToggle(task)}
                 disabled={isUpdating}
-                className={styles.button}
               >
                 {isUpdating ? "Помечаем…" : "Отметить выполненной"}
               </button>
             )}
 
-            {/* Кнопка подтверждения и перевода (для родителя) */}
+            {/* Кнопка для родителя */}
             {me?.role === "parent" && task.done_by_child && !task.done_by_parent && (
               <button
+                className={styles.button}
                 onClick={() => handleConfirm(task)}
                 disabled={isConfirming}
-                className={styles.button}
               >
                 {isConfirming
                   ? "Перевод…"
@@ -120,7 +115,7 @@ export default function TasksList() {
               </button>
             )}
 
-            {/* Пометка о завершении */}
+            {/* Лейбл о подтверждённости */}
             {task.done_by_parent && (
               <span className={styles.confirmed}>Подтверждена</span>
             )}
@@ -130,6 +125,140 @@ export default function TasksList() {
     </div>
   )
 }
+
+
+// // src/pages/TasksList/TasksList.jsx
+// import React from 'react'
+// import {
+//   useFetchTasksQuery,
+//   useUpdateTaskMutation,
+//   useFetchMeQuery,
+//   useConfirmTaskMutation
+// } from '../../store/api'
+// import CreateTask from '../../components/CreateTask/CreateTask'
+// import styles from './TasksList.module.css'
+
+// export default function TasksList() {
+//   // 1) Список задач
+//   const {
+//     data: tasks = [],
+//     error: fetchError,
+//     isLoading: isFetching,
+//     refetch
+//   } = useFetchTasksQuery()
+
+//   // 2) Мутация для отметки выполнения ребёнком
+//   const [updateTask, { isLoading: isUpdating, error: updateError }] =
+//     useUpdateTaskMutation()
+
+//   // 3) Мутация для подтверждения родителем
+//   const [confirmTask, { isLoading: isConfirming, error: confirmError }] =
+//     useConfirmTaskMutation()
+
+//   // 4) Текущий пользователь
+//   const { data: me } = useFetchMeQuery()
+
+//   // 5) Обработчики
+//   const handleToggle = async (task) => {
+//     try {
+//       await updateTask({
+//         id: task.id,
+//         is_completed: !task.is_completed,
+//       }).unwrap()
+//       // RTK Query автоматически обновит fetchTasks
+//     } catch (err) {
+//       console.error('Не удалось обновить задачу', err)
+//     }
+//   }
+
+//   const handleConfirm = async (task) => {
+//     try {
+//       await confirmTask({ id: task.id }).unwrap()
+//       refetch()
+//     } catch (err) {
+//       console.error('Не удалось подтвердить задачу', err)
+//     }
+//   }
+
+//   // 6) Загрузка / ошибки
+//   if (isFetching) return <p>Загрузка задач…</p>
+//   if (fetchError) {
+//     const msg =
+//       fetchError.data?.detail ??
+//       fetchError.error ??
+//       JSON.stringify(fetchError)
+//     return <p className={styles.error}>Ошибка загрузки: {msg}</p>
+//   }
+
+//   return (
+//     <div className={styles.container}>
+//       <h1>Список задач</h1>
+
+//       {/* Форма создания новой задачи */}
+//       <CreateTask onCreated={refetch} />
+
+//       {/* Ошибки мутаций */}
+//       {updateError && (
+//         <p className={styles.error}>
+//           Ошибка отметки выполнения: {updateError.data?.detail ?? updateError.error}
+//         </p>
+//       )}
+//       {confirmError && (
+//         <p className={styles.error}>
+//           Ошибка подтверждения: {confirmError.data?.detail ?? confirmError.error}
+//         </p>
+//       )}
+
+//       {/* Сам список */}
+//       <ul className={styles.list}>
+//         {tasks.map(task => (
+//           <li key={task.id} className={styles.item}>
+//             <h3>{task.title}</h3>
+//             {task.description && <p>{task.description}</p>}
+//             <p>Цена: {task.price}₽</p>
+//             <p>
+//               Статус:{" "}
+//               {task.done_by_parent
+//                 ? "✅ Подтверждена и переведена"
+//                 : task.done_by_child
+//                 ? "⏳ Ждёт подтверждения"
+//                 : "❌ Не выполнена ребёнком"}
+//             </p>
+
+//             {/* Кнопка отметки выполнения (для ребёнка) */}
+//             {!task.done_by_child && me?.role === "child" && (
+//               <button
+//                 onClick={() => handleToggle(task)}
+//                 disabled={isUpdating}
+//                 className={styles.button}
+//               >
+//                 {isUpdating ? "Помечаем…" : "Отметить выполненной"}
+//               </button>
+//             )}
+
+//             {/* Кнопка подтверждения и перевода (для родителя) */}
+//             {me?.role === "parent" && task.done_by_child && !task.done_by_parent && (
+//               <button
+//                 onClick={() => handleConfirm(task)}
+//                 disabled={isConfirming}
+//                 className={styles.button}
+//               >
+//                 {isConfirming
+//                   ? "Перевод…"
+//                   : `Подтвердить и перевести ${task.price}₽`}
+//               </button>
+//             )}
+
+//             {/* Пометка о завершении */}
+//             {task.done_by_parent && (
+//               <span className={styles.confirmed}>Подтверждена</span>
+//             )}
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   )
+// }
 
 
 
