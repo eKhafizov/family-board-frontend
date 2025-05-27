@@ -18,19 +18,21 @@ export const api = createApi({
   tagTypes: ['User', 'Tasks', 'Family'],
   endpoints: (builder) => ({
     // Регистрация пользователя
+    
     register: builder.mutation({
-      query: ({ email, password }) => ({
-        url: 'https://family-board.onrender.com/users/users/register',
+      query: ({ email, password, role, parent_family_id }) => ({
+        url: '/users/register',   // ← относительный путь от API_ROOT
         method: 'POST',
-        body: { email, password },
+        body: { email, password, role, parent_family_id },
       }),
     }),
     // Логин
     fetchLogin: builder.mutation({
       query: ({ username, password }) => ({
-        url: 'https://family-board.onrender.com/users/users/token',
+        url: '/users/token',
         method: 'POST',
-        body: { username, password },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username, password }),
       }),
       async onQueryStarted({ username, password }, { dispatch, queryFulfilled }) {
         const { data: { access_token } } = await queryFulfilled;
@@ -41,7 +43,7 @@ export const api = createApi({
     }),
     // Профиль текущего пользователя
     fetchMe: builder.query({
-      query: () => 'https://family-board.onrender.com/users/users/me',
+      query: () => '/users/me',
       providesTags: ['User'],
     }),
     // Получить все задачи

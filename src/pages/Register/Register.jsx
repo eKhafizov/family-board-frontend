@@ -1,5 +1,4 @@
 // src/pages/Register/Register.jsx
-//test
 
 import React, { useState } from 'react';
 import { useRegisterMutation } from '../../store/api';
@@ -38,7 +37,11 @@ export default function Register() {
       const payload = {
         email: form.email,
         password: form.password,
-        full_name: form.fullName,
+        role: form.role,                      // ← передаём роль
+        // если это ребёнок — привязываем к родительской семье
+        ...(form.role === 'child' && {
+          parent_family_id: Number(form.family_id)
+        }),
       };
       await register(payload).unwrap();
       alert('Успешная регистрация! Теперь войдите.');
